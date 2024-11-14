@@ -119,6 +119,7 @@ public class AcdiControllerTest {
                 .denominacion("Denom1")
                 .liquidaEnByma(false)
                 .habilitado(true)
+                .fechaAlta(LocalDateTime.now())
                 .mail("nuevo@mail.com")
                 .build();
 
@@ -153,8 +154,8 @@ public class AcdiControllerTest {
     @Test
     void deberiaObtenerTodosLosAcdisExitosamente() throws Exception {
         List<Acdi> acdis = Arrays.asList(
-                Acdi.builder().idAcdi(1L).idOrganizacionAcdi("Org1").build(),
-                Acdi.builder().idAcdi(2L).idOrganizacionAcdi("Org2").build()
+                Acdi.builder().idAcdi(1L).idOrganizacionAcdi("Org1").fechaAlta(LocalDateTime.now()).build(),
+                Acdi.builder().idAcdi(2L).idOrganizacionAcdi("Org2").fechaAlta(LocalDateTime.now()).build()
         );
 
         when(acdiInPort.obtenerTodosLosAcdis()).thenReturn(acdis);
@@ -185,6 +186,7 @@ public class AcdiControllerTest {
                 .denominacion("Denom1")
                 .liquidaEnByma(true)
                 .habilitado(true)
+                .fechaAlta(LocalDateTime.now())
                 .mail("test@mail.com")
                 .build();
 

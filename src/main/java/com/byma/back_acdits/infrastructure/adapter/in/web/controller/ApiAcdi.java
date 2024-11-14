@@ -39,14 +39,14 @@ public interface ApiAcdi {
 
     @Operation(summary = "Actualizar un ACDI")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Sociedad gerente actualizada exitosamente"),
+            @ApiResponse(responseCode = "200", description = "ACDI actualizada exitosamente"),
             @ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
     ResponseEntity<AcdiRespuestaDTO> actualizar(@PathVariable Long id, @RequestBody @Valid ActualizarAcdiSolicitud actualizarAcdiSolicitud);
 
-    @Operation(summary = "Eliminar un ACDI")
+    @Operation(summary = "Dar de baja un ACDI(Queda en estado INHABILITADA)")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", description = "ACDI eliminado exitosamente"),
+            @ApiResponse(responseCode = "204", description = "ACDI dado de baja exitosamente"),
             @ApiResponse(responseCode = "404", description = "Error: ACDI no encontrado"),
             @ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })

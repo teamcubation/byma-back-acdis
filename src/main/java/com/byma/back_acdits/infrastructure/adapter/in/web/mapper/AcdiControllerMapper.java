@@ -8,6 +8,7 @@ import com.byma.back_acdits.infrastructure.adapter.in.web.dto.request.CrearAcdiS
 import com.byma.back_acdits.infrastructure.adapter.in.web.dto.response.AcdiRespuestaDTO;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class AcdiControllerMapper {
 
@@ -36,7 +37,7 @@ public class AcdiControllerMapper {
                 .habilitado(acdi.getHabilitado())
                 .billeteras(acdi.getBilleteras())
                 .observaciones(acdi.getObservaciones())
-                .fechaAlta(acdi.getFechaAlta())
+                .fechaAlta(acdi.getFechaAlta().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss")))
                 .mail(acdi.getMail())
                 .estado(acdi.getEstado())
                 .build();

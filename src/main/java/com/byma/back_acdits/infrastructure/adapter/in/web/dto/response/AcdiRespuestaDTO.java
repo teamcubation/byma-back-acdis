@@ -21,7 +21,7 @@ public class AcdiRespuestaDTO {
     private Boolean habilitado;
     private Boolean billeteras;
     private String observaciones;
-    private LocalDateTime fechaAlta;
+    private String fechaAlta;
     private String mail;
     private EstadoAcdi estado;
 
