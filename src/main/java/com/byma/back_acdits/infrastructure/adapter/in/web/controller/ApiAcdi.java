@@ -1,8 +1,8 @@
 package com.byma.back_acdits.infrastructure.adapter.in.web.controller;
 
-import com.byma.back_acdits.infrastructure.adapter.in.web.dto.request.ActualizarAcdiSolicitud;
-import com.byma.back_acdits.infrastructure.adapter.in.web.dto.request.CrearAcdiSolicitud;
-import com.byma.back_acdits.infrastructure.adapter.in.web.dto.response.AcdiRespuestaDTO;
+import com.byma.back_acdits.infrastructure.adapter.in.web.dto.request.ActualizarAcdiRequest;
+import com.byma.back_acdits.infrastructure.adapter.in.web.dto.request.CrearAcdiRequest;
+import com.byma.back_acdits.infrastructure.adapter.in.web.dto.response.AcdiResponseDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -20,14 +20,14 @@ public interface ApiAcdi {
             @ApiResponse(responseCode = "201", description = "ACDI creado exitosamente"),
             @ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
-    ResponseEntity<AcdiRespuestaDTO> crear(@RequestBody @Valid CrearAcdiSolicitud crearAcdiSolicitud);
+    ResponseEntity<AcdiResponseDTO> crear(@RequestBody @Valid CrearAcdiRequest crearAcdiRequest);
 
     @Operation(summary = "Obtener todos los ACDI")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "ACDIs encontrados"),
             @ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
-    public ResponseEntity<List<AcdiRespuestaDTO>> obtenerTodos();
+    public ResponseEntity<List<AcdiResponseDTO>> obtenerTodos();
 
     @Operation(summary = "Obtener un ACDI por ID")
     @ApiResponses(value = {
@@ -35,14 +35,14 @@ public interface ApiAcdi {
             @ApiResponse(responseCode = "404", description = "Error: ACDI no encontrado"),
             @ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
-    ResponseEntity<AcdiRespuestaDTO> obtenerPorId(@PathVariable Long id);
+    ResponseEntity<AcdiResponseDTO> obtenerPorId(@PathVariable Long id);
 
     @Operation(summary = "Actualizar un ACDI")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "ACDI actualizada exitosamente"),
             @ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
-    ResponseEntity<AcdiRespuestaDTO> actualizar(@PathVariable Long id, @RequestBody @Valid ActualizarAcdiSolicitud actualizarAcdiSolicitud);
+    ResponseEntity<AcdiResponseDTO> actualizar(@PathVariable Long id, @RequestBody @Valid ActualizarAcdiRequest actualizarAcdiRequest);
 
     @Operation(summary = "Dar de baja un ACDI(Queda en estado INHABILITADA)")
     @ApiResponses(value = {
@@ -58,6 +58,6 @@ public interface ApiAcdi {
             @ApiResponse(responseCode = "404", description = "Error: ACDI no encontrado"),
             @ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
-    ResponseEntity<AcdiRespuestaDTO> darDeBaja(@PathVariable Long id);
+    ResponseEntity<AcdiResponseDTO> darDeBaja(@PathVariable Long id);
 
 }

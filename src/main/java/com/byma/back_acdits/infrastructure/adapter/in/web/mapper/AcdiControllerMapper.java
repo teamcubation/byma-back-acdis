@@ -3,35 +3,35 @@ package com.byma.back_acdits.infrastructure.adapter.in.web.mapper;
 import com.byma.back_acdits.application.util.Validador;
 import com.byma.back_acdits.domain.model.Acdi;
 import com.byma.back_acdits.domain.model.EstadoAcdi;
-import com.byma.back_acdits.infrastructure.adapter.in.web.dto.request.ActualizarAcdiSolicitud;
-import com.byma.back_acdits.infrastructure.adapter.in.web.dto.request.CrearAcdiSolicitud;
-import com.byma.back_acdits.infrastructure.adapter.in.web.dto.response.AcdiRespuestaDTO;
+import com.byma.back_acdits.infrastructure.adapter.in.web.dto.request.ActualizarAcdiRequest;
+import com.byma.back_acdits.infrastructure.adapter.in.web.dto.request.CrearAcdiRequest;
+import com.byma.back_acdits.infrastructure.adapter.in.web.dto.response.AcdiResponseDTO;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class AcdiControllerMapper {
 
-    public static Acdi acdiCrearSolicitudAAcdiModel(CrearAcdiSolicitud crearAcdiSolicitud) {
-        Validador.validarNoNulo(crearAcdiSolicitud);
+    public static Acdi mapRequestToModel(CrearAcdiRequest crearAcdiRequest) {
+        Validador.validarNoNulo(crearAcdiRequest);
         return Acdi.builder()
-                .idOrganizacionAcdi(crearAcdiSolicitud.getIdOrganizacion())
-                .denominacion(crearAcdiSolicitud.getDenominacion())
-                .liquidaEnByma(crearAcdiSolicitud.getLiquidaEnByma())
-                .habilitado(crearAcdiSolicitud.getHabilitado())
-                .billeteras(crearAcdiSolicitud.getBilleteras())
-                .observaciones(crearAcdiSolicitud.getObservaciones())
+                .idOrganizacionAcdi(crearAcdiRequest.getIdOrganizacion())
+                .denominacion(crearAcdiRequest.getDenominacion())
+                .liquidaEnByma(crearAcdiRequest.getLiquidaEnByma())
+                .habilitado(crearAcdiRequest.getHabilitado())
+                .billeteras(crearAcdiRequest.getBilleteras())
+                .observaciones(crearAcdiRequest.getObservaciones())
                 .fechaAlta(LocalDateTime.now())
-                .mail(crearAcdiSolicitud.getMail())
+                .mail(crearAcdiRequest.getMail())
                 .estado(EstadoAcdi.CREADA)
                 .build();
     }
 
-    public static AcdiRespuestaDTO acdiModelAAcdiRespuestaDTO(Acdi acdi) {
+    public static AcdiResponseDTO mapModelToResponseDTO(Acdi acdi) {
         Validador.validarNoNulo(acdi);
-        return AcdiRespuestaDTO.builder()
+        return AcdiResponseDTO.builder()
                 .idAcdi(acdi.getIdAcdi())
-                .idOrganizacionAcdi(acdi.getIdOrganizacionAcdi())
+                .idOrganizacion(acdi.getIdOrganizacionAcdi())
                 .denominacion(acdi.getDenominacion())
                 .liquidaEnByma(acdi.getLiquidaEnByma())
                 .habilitado(acdi.getHabilitado())
@@ -43,11 +43,11 @@ public class AcdiControllerMapper {
                 .build();
     }
 
-    public static Acdi acdiActualizarSolicitudAAcdiModel(ActualizarAcdiSolicitud actualizarAcdiSolicitud) {
-        Validador.validarNoNulo(actualizarAcdiSolicitud);
+    public static Acdi acdiActualizarSolicitudAAcdiModel(ActualizarAcdiRequest actualizarAcdiRequest) {
+        Validador.validarNoNulo(actualizarAcdiRequest);
         return Acdi.builder()
-                .mail(actualizarAcdiSolicitud.getMail())
-                .liquidaEnByma(actualizarAcdiSolicitud.getLiquidaEnByma())
+                .mail(actualizarAcdiRequest.getMail())
+                .liquidaEnByma(actualizarAcdiRequest.getLiquidaEnByma())
                 .build();
     }
 

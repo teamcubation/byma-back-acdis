@@ -6,8 +6,8 @@ import com.byma.back_acdits.domain.model.Acdi;
 import com.byma.back_acdits.domain.model.EstadoAcdi;
 import com.byma.back_acdits.exceptionHandler.GlobalExceptionHandler;
 import com.byma.back_acdits.infrastructure.adapter.in.web.controller.impl.AcdiController;
-import com.byma.back_acdits.infrastructure.adapter.in.web.dto.request.ActualizarAcdiSolicitud;
-import com.byma.back_acdits.infrastructure.adapter.in.web.dto.request.CrearAcdiSolicitud;
+import com.byma.back_acdits.infrastructure.adapter.in.web.dto.request.ActualizarAcdiRequest;
+import com.byma.back_acdits.infrastructure.adapter.in.web.dto.request.CrearAcdiRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -35,6 +35,21 @@ public class AcdiControllerTest {
     public static final String ERROR_VALIDACION = "Los datos enviados no cumplen con los criterios de validacion.";
     public static final String ACDI_NO_ENCOTRADO = "ACDI no encontrado.";
 
+    public static final String API_URL = "/api/v1/acdis";
+    public static final String API_URL_BAJA = "/api/v1/acdis/{id}/baja";
+    public static final String API_URL_BY_ID = "/api/v1/acdis/{id}";
+
+    public static final String ORGANIZACION_1 = "Org1";
+    public static final String DENOMINACION_1 = "Denom1";
+    public static final String MAIL_TEST = "test@mail.com";
+    public static final String MAIL_NUEVO = "nuevo@mail.com";
+
+    public static final Long ACDI_ID_1 = 1L;
+    public static final Long ACDI_ID_99 = 99L;
+
+    public static final boolean LIQUIDA_EN_BYMA = true;
+    public static final boolean HABILITADO = true;
+
     @Mock
     private AcdiInPort acdiInPort;
 
@@ -57,96 +72,92 @@ public class AcdiControllerTest {
 
     @Test
     void deberiaCrearAcdiCuandoEsValido() throws Exception {
-        CrearAcdiSolicitud crearAcdiSolicitud = CrearAcdiSolicitud.builder()
-                .idOrganizacion("Org1")
-                .denominacion("Denom1")
-                .liquidaEnByma(true)
-                .habilitado(true)
-                .mail("test@mail.com")
+        CrearAcdiRequest crearAcdiRequest = CrearAcdiRequest.builder()
+                .idOrganizacion(ORGANIZACION_1)
+                .denominacion(DENOMINACION_1)
+                .liquidaEnByma(LIQUIDA_EN_BYMA)
+                .habilitado(HABILITADO)
+                .mail(MAIL_TEST)
                 .build();
 
         Acdi acdiCreado = Acdi.builder()
-                .idAcdi(1L)
-                .idOrganizacionAcdi("Org1")
-                .denominacion("Denom1")
-                .liquidaEnByma(true)
-                .habilitado(true)
+                .idAcdi(ACDI_ID_1)
+                .idOrganizacionAcdi(ORGANIZACION_1)
+                .denominacion(DENOMINACION_1)
+                .liquidaEnByma(LIQUIDA_EN_BYMA)
+                .habilitado(HABILITADO)
                 .fechaAlta(LocalDateTime.now())
                 .estado(EstadoAcdi.CREADA)
-                .mail("test@mail.com")
+                .mail(MAIL_TEST)
                 .build();
 
         when(acdiInPort.crearAcdi(any(Acdi.class))).thenReturn(acdiCreado);
 
-        mockMvc.perform(post("/api/v1/acdis")
-                        .contentType("application/json")
-                        .content(objectMapper.writeValueAsString(crearAcdiSolicitud)))
+        mockMvc.perform(post(API_URL)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(crearAcdiRequest)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.idAcdi").value(1L))
-                .andExpect(jsonPath("$.idOrganizacionAcdi").value("Org1"))
-                .andExpect(jsonPath("$.denominacion").value("Denom1"));
-
+                .andExpect(jsonPath("$.idAcdi").value(ACDI_ID_1))
+                .andExpect(jsonPath("$.idOrganizacion").value(ORGANIZACION_1))
+                .andExpect(jsonPath("$.denominacion").value(DENOMINACION_1));
     }
 
     @Test
     void deberiaDevolverError400CuandoCrearAcdiEsInvalido() throws Exception {
-        CrearAcdiSolicitud crearAcdiSolicitud = CrearAcdiSolicitud.builder()
-                .idOrganizacion("")
-                .denominacion("Denom1")
-                .liquidaEnByma(true)
-                .habilitado(true)
-                .mail("test@mail.com")
+        CrearAcdiRequest crearAcdiRequest = CrearAcdiRequest.builder()
+                .idOrganizacion("") // Invalid data
+                .denominacion(DENOMINACION_1)
+                .liquidaEnByma(LIQUIDA_EN_BYMA)
+                .habilitado(HABILITADO)
+                .mail(MAIL_TEST)
                 .build();
 
-        mockMvc.perform(post("/api/v1/acdis")
-                        .contentType("application/json")
-                        .content(objectMapper.writeValueAsString(crearAcdiSolicitud)))
+        mockMvc.perform(post(API_URL)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(crearAcdiRequest)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value(ERROR_VALIDACION));
     }
 
     @Test
     void deberiaActualizarAcdiExitosamenteCuandoAcdiEsValido() throws Exception {
-        Long acdiId = 1L;
-        ActualizarAcdiSolicitud actualizarAcdiSolicitud = ActualizarAcdiSolicitud.builder()
-                .mail("nuevo@mail.com")
+        ActualizarAcdiRequest actualizarAcdiRequest = ActualizarAcdiRequest.builder()
+                .mail(MAIL_NUEVO)
                 .liquidaEnByma(false)
                 .build();
 
         Acdi acdiActualizado = Acdi.builder()
-                .idAcdi(acdiId)
-                .idOrganizacionAcdi("Org1")
-                .denominacion("Denom1")
+                .idAcdi(ACDI_ID_1)
+                .idOrganizacionAcdi(ORGANIZACION_1)
+                .denominacion(DENOMINACION_1)
                 .liquidaEnByma(false)
-                .habilitado(true)
+                .habilitado(HABILITADO)
                 .fechaAlta(LocalDateTime.now())
-                .mail("nuevo@mail.com")
+                .mail(MAIL_NUEVO)
                 .build();
 
-        when(acdiInPort.actualizarAcdi(eq(acdiId), any())).thenReturn(acdiActualizado);
+        when(acdiInPort.actualizarAcdi(eq(ACDI_ID_1), any())).thenReturn(acdiActualizado);
 
-        mockMvc.perform(put("/api/v1/acdis/{id}", acdiId)
-                        .contentType("application/json")
-                        .content(objectMapper.writeValueAsString(actualizarAcdiSolicitud)))
+        mockMvc.perform(put(API_URL_BY_ID, ACDI_ID_1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(actualizarAcdiRequest)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.idAcdi").value(acdiId))
-                .andExpect(jsonPath("$.mail").value("nuevo@mail.com"));
-
+                .andExpect(jsonPath("$.idAcdi").value(ACDI_ID_1))
+                .andExpect(jsonPath("$.mail").value(MAIL_NUEVO));
     }
 
     @Test
     void deberiaDevolverStatus404CuandoAcdiNoExisteParaActualizar() throws Exception {
-        final Long acdiId = 99L;
-        ActualizarAcdiSolicitud actualizarAcdiSolicitud = ActualizarAcdiSolicitud.builder()
-                .mail("nuevo@mail.com")
+        ActualizarAcdiRequest actualizarAcdiRequest = ActualizarAcdiRequest.builder()
+                .mail(MAIL_NUEVO)
                 .liquidaEnByma(true)
                 .build();
 
-        when(acdiInPort.actualizarAcdi(eq(acdiId), any())).thenThrow(new AcdiNoEncontradoException(ACDI_NO_ENCOTRADO));
+        when(acdiInPort.actualizarAcdi(eq(ACDI_ID_99), any())).thenThrow(new AcdiNoEncontradoException(ACDI_NO_ENCOTRADO));
 
-        mockMvc.perform(put("/api/v1/acdis/{id}", acdiId)
+        mockMvc.perform(put(API_URL_BY_ID, ACDI_ID_99)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(actualizarAcdiSolicitud)))
+                        .content(objectMapper.writeValueAsString(actualizarAcdiRequest)))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").value(ACDI_NO_ENCOTRADO));
     }
@@ -154,94 +165,79 @@ public class AcdiControllerTest {
     @Test
     void deberiaObtenerTodosLosAcdisExitosamente() throws Exception {
         List<Acdi> acdis = Arrays.asList(
-                Acdi.builder().idAcdi(1L).idOrganizacionAcdi("Org1").fechaAlta(LocalDateTime.now()).build(),
+                Acdi.builder().idAcdi(ACDI_ID_1).idOrganizacionAcdi(ORGANIZACION_1).fechaAlta(LocalDateTime.now()).build(),
                 Acdi.builder().idAcdi(2L).idOrganizacionAcdi("Org2").fechaAlta(LocalDateTime.now()).build()
         );
 
         when(acdiInPort.obtenerTodosLosAcdis()).thenReturn(acdis);
 
-        mockMvc.perform(get("/api/v1/acdis"))
+        mockMvc.perform(get(API_URL))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(2))
-                .andExpect(jsonPath("$[0].idOrganizacionAcdi").value("Org1"));
-
+                .andExpect(jsonPath("$[0].idOrganizacion").value(ORGANIZACION_1));
     }
 
     @Test
     void deberiaDevolverListaVaciaCuandoNoExistenAcdis() throws Exception {
         when(acdiInPort.obtenerTodosLosAcdis()).thenReturn(Arrays.asList());
 
-        mockMvc.perform(get("/api/v1/acdis"))
+        mockMvc.perform(get(API_URL))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(0));
-
     }
 
     @Test
     void deberiaObtenerAcdiPorIdCuandoExiste() throws Exception {
-        Long acdiId = 1L;
         Acdi acdi = Acdi.builder()
-                .idAcdi(acdiId)
-                .idOrganizacionAcdi("Org1")
-                .denominacion("Denom1")
-                .liquidaEnByma(true)
-                .habilitado(true)
+                .idAcdi(ACDI_ID_1)
+                .idOrganizacionAcdi(ORGANIZACION_1)
+                .denominacion(DENOMINACION_1)
+                .liquidaEnByma(LIQUIDA_EN_BYMA)
+                .habilitado(HABILITADO)
                 .fechaAlta(LocalDateTime.now())
-                .mail("test@mail.com")
+                .mail(MAIL_TEST)
                 .build();
 
-        when(acdiInPort.obtenerAcdiPorId(acdiId)).thenReturn(acdi);
+        when(acdiInPort.obtenerAcdiPorId(ACDI_ID_1)).thenReturn(acdi);
 
-        mockMvc.perform(get("/api/v1/acdis/{id}", acdiId))
+        mockMvc.perform(get(API_URL_BY_ID, ACDI_ID_1))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.idAcdi").value(acdiId))
-                .andExpect(jsonPath("$.idOrganizacionAcdi").value("Org1"));
-
+                .andExpect(jsonPath("$.idAcdi").value(ACDI_ID_1))
+                .andExpect(jsonPath("$.idOrganizacion").value(ORGANIZACION_1));
     }
 
     @Test
     void deberiaDevolverStatus404CuandoNoSeEncuentraAcdiPorId() throws Exception {
-        Long acdiId = 1L;
+        when(acdiInPort.obtenerAcdiPorId(ACDI_ID_1)).thenThrow(new AcdiNoEncontradoException(ACDI_NO_ENCOTRADO));
 
-        when(acdiInPort.obtenerAcdiPorId(acdiId)).thenThrow(new AcdiNoEncontradoException(ACDI_NO_ENCOTRADO));
-
-        mockMvc.perform(get("/api/v1/acdis/{id}", acdiId))
+        mockMvc.perform(get(API_URL_BY_ID, ACDI_ID_1))
                 .andExpect(jsonPath("$.message").value(ACDI_NO_ENCOTRADO));
-
     }
 
     @Test
     void deberiaEliminarAcdiExitosamente() throws Exception {
-        Long acdiId = 1L;
+        doNothing().when(acdiInPort).eliminarAcdi(ACDI_ID_1);
 
-        doNothing().when(acdiInPort).eliminarAcdi(acdiId);
-
-        mockMvc.perform(delete("/api/v1/acdis/{id}", acdiId))
+        mockMvc.perform(delete(API_URL_BY_ID, ACDI_ID_1))
                 .andExpect(status().isNoContent());
-
     }
 
     @Test
     void deberiaDevolverStatus404CuandoAcdiNoExisteParaEliminar() throws Exception {
-        Long acdiId = 1L;
+        doThrow(new AcdiNoEncontradoException(ACDI_NO_ENCOTRADO)).when(acdiInPort).eliminarAcdi(ACDI_ID_1);
 
-        doThrow(new AcdiNoEncontradoException(ACDI_NO_ENCOTRADO)).when(acdiInPort).eliminarAcdi(acdiId);
-
-        mockMvc.perform(delete("/api/v1/acdis/{id}", acdiId))
+        mockMvc.perform(delete(API_URL_BY_ID, ACDI_ID_1))
                 .andExpect(jsonPath("$.message").value(ACDI_NO_ENCOTRADO));
-
     }
 
     @Test
     void deberiaDevolverOkCuandoDarDeBajaEsExitoso() throws Exception {
-        final long acdiId = 1L;
-
         Acdi acdiBajado = Acdi.builder()
-                .idAcdi(acdiId)
+                .idAcdi(ACDI_ID_1)
                 .idOrganizacionAcdi("1234")
                 .denominacion("Denominacion")
-                .liquidaEnByma(true)
-                .habilitado(true)
+                .liquidaEnByma(LIQUIDA_EN_BYMA)
+                .habilitado(HABILITADO)
                 .billeteras(false)
                 .observaciones("observacion")
                 .fechaAlta(LocalDateTime.now())
@@ -249,23 +245,20 @@ public class AcdiControllerTest {
                 .estado(EstadoAcdi.DESHABILITADA)
                 .build();
 
-        when(acdiInPort.darDeBajaAcdi(acdiId)).thenReturn(acdiBajado);
+        when(acdiInPort.darDeBajaAcdi(ACDI_ID_1)).thenReturn(acdiBajado);
 
-        mockMvc.perform(put("/api/v1/acdis/{id}/baja", acdiId))
+        mockMvc.perform(put(API_URL_BAJA, ACDI_ID_1))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.idAcdi").value(acdiId))
+                .andExpect(jsonPath("$.idAcdi").value(ACDI_ID_1))
                 .andExpect(jsonPath("$.estado").value(EstadoAcdi.DESHABILITADA.toString()));
     }
 
     @Test
     void deberiaDevolverNotFoundCuandoNoSeEncuentraElAcdiParaBaja() throws Exception {
-        final long acdiId = 99L;
+        when(acdiInPort.darDeBajaAcdi(ACDI_ID_99)).thenThrow(new AcdiNoEncontradoException(ACDI_NO_ENCOTRADO));
 
-        when(acdiInPort.darDeBajaAcdi(acdiId)).thenThrow(new AcdiNoEncontradoException(ACDI_NO_ENCOTRADO));
-
-        mockMvc.perform(put("/api/v1/acdis/{id}/baja", acdiId))
+        mockMvc.perform(put(API_URL_BAJA, ACDI_ID_99))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").value(ACDI_NO_ENCOTRADO));
     }
-
 }

@@ -6,16 +6,14 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class AcdiRespuestaDTO {
+public class AcdiResponseDTO {
 
     private Long idAcdi;
-    private String idOrganizacionAcdi;
+    private String idOrganizacion;
     private String denominacion;
     private Boolean liquidaEnByma;
     private Boolean habilitado;

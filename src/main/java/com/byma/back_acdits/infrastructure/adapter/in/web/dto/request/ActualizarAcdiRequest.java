@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ActualizarAcdiSolicitud {
+public class ActualizarAcdiRequest {
 
     private String mail;
     private Boolean liquidaEnByma;

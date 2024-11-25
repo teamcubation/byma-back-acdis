@@ -11,7 +11,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -20,12 +19,23 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import java.time.LocalDate;
-
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 public class AcdiServiceTest {
+
+    public static final Long ACDI_ID_1 = 1L;
+    public static final Long ACDI_ID_999 = 999L;
+    public static final String ORGANIZACION = "1234";
+    public static final String DENOMINACION = "Denominacion";
+    public static final String MAIL_TEST = "mail@mail.com";
+    public static final String MAIL_NUEVO = "nuevo@mail.com";
+    public static final String OBSERVACIONES = "observacion";
+    public static final boolean LIQUIDA_EN_BYMA = true;
+    public static final boolean HABILITADO = true;
+    public static final boolean DESHABILITADO = false;
+    public static final EstadoAcdi ESTADO_CREADA = EstadoAcdi.CREADA;
+    public static final EstadoAcdi ESTADO_DESHABILITADA = EstadoAcdi.DESHABILITADA;
 
     @Mock
     private AcdiOutPort acdiOutPort;
@@ -33,34 +43,34 @@ public class AcdiServiceTest {
     @InjectMocks
     private AcdiService acdiService;
 
-    private Acdi acdi;
+    private Acdi acdiMock;
 
     @BeforeEach
     void setup() {
         MockitoAnnotations.openMocks(this);
-        acdi = Acdi.builder()
-                .idAcdi(1L)
-                .idOrganizacionAcdi("1234")
-                .denominacion("Denominacion")
-                .liquidaEnByma(true)
-                .habilitado(true)
+        acdiMock = Acdi.builder()
+                .idAcdi(ACDI_ID_1)
+                .idOrganizacionAcdi(ORGANIZACION)
+                .denominacion(DENOMINACION)
+                .liquidaEnByma(LIQUIDA_EN_BYMA)
+                .habilitado(HABILITADO)
                 .billeteras(false)
-                .observaciones("observacion")
+                .observaciones(OBSERVACIONES)
                 .fechaAlta(LocalDateTime.now())
-                .mail("mail@mail.com")
-                .estado(EstadoAcdi.CREADA)
+                .mail(MAIL_TEST)
+                .estado(ESTADO_CREADA)
                 .build();
     }
 
     @Test
     void deberiaCrearAcdiExitosamente() {
-        when(acdiOutPort.guardarAcdi(any(Acdi.class))).thenReturn(acdi);
+        when(acdiOutPort.guardarAcdi(any(Acdi.class))).thenReturn(acdiMock);
 
-        Acdi resultado = acdiService.crearAcdi(acdi);
+        Acdi resultado = acdiService.crearAcdi(acdiMock);
 
         assertNotNull(resultado);
-        assertEquals(acdi.getIdAcdi(), resultado.getIdAcdi());
-        assertEquals(EstadoAcdi.CREADA, resultado.getEstado());
+        assertEquals(acdiMock.getIdAcdi(), resultado.getIdAcdi());
+        assertEquals(ESTADO_CREADA, resultado.getEstado());
 
         verify(acdiOutPort, times(1)).guardarAcdi(any(Acdi.class));
     }
@@ -72,37 +82,34 @@ public class AcdiServiceTest {
 
     @Test
     void deberiaActualizarAcdiExitosamente() {
-        Long acdiId = 1L;
         Acdi acdiActualizado = Acdi.builder()
-                .mail("nuevo@mail.com")
-                .liquidaEnByma(true)
+                .mail(MAIL_NUEVO)
+                .liquidaEnByma(LIQUIDA_EN_BYMA)
                 .build();
 
-        when(acdiOutPort.obtenerAcdiPorId(acdiId)).thenReturn(Optional.of(acdi));
+        when(acdiOutPort.obtenerAcdiPorId(ACDI_ID_1)).thenReturn(Optional.of(acdiMock));
         when(acdiOutPort.guardarAcdi(any(Acdi.class))).thenReturn(acdiActualizado);
 
-        Acdi resultado = acdiService.actualizarAcdi(acdiId, acdiActualizado);
+        Acdi resultado = acdiService.actualizarAcdi(ACDI_ID_1, acdiActualizado);
 
         assertNotNull(resultado);
-        assertEquals("nuevo@mail.com", resultado.getMail());
-        assertEquals(true, resultado.getLiquidaEnByma());
+        assertEquals(MAIL_NUEVO, resultado.getMail());
+        assertTrue(resultado.getLiquidaEnByma());
 
-        verify(acdiOutPort, times(1)).obtenerAcdiPorId(acdiId);
+        verify(acdiOutPort, times(1)).obtenerAcdiPorId(ACDI_ID_1);
         verify(acdiOutPort, times(1)).guardarAcdi(any(Acdi.class));
     }
 
     @Test
     void deberiaLanzarExcepcionCuandoAcdiNoExisteParaActualizar() {
-        Long acdiId = 999L;
+        when(acdiOutPort.obtenerAcdiPorId(ACDI_ID_999)).thenReturn(Optional.empty());
 
-        when(acdiOutPort.obtenerAcdiPorId(acdiId)).thenReturn(Optional.empty());
-
-        assertThrows(AcdiNoEncontradoException.class, () -> acdiService.actualizarAcdi(acdiId, acdi));
+        assertThrows(AcdiNoEncontradoException.class, () -> acdiService.actualizarAcdi(ACDI_ID_999, acdiMock));
     }
 
     @Test
     void deberiaObtenerTodosLosAcdisExitosamente() {
-        List<Acdi> acdis = List.of(acdi);
+        List<Acdi> acdis = List.of(acdiMock);
         when(acdiOutPort.obtenerTodosAcdis()).thenReturn(acdis);
 
         List<Acdi> resultado = acdiService.obtenerTodosLosAcdis();
@@ -115,77 +122,63 @@ public class AcdiServiceTest {
 
     @Test
     void deberiaObtenerAcdiPorIdExitosamente() {
-        Long acdiId = 1L;
+        when(acdiOutPort.obtenerAcdiPorId(ACDI_ID_1)).thenReturn(Optional.of(acdiMock));
 
-        when(acdiOutPort.obtenerAcdiPorId(acdiId)).thenReturn(Optional.of(acdi));
-
-        Acdi resultado = acdiService.obtenerAcdiPorId(acdiId);
+        Acdi resultado = acdiService.obtenerAcdiPorId(ACDI_ID_1);
 
         assertNotNull(resultado);
-        assertEquals(acdiId, resultado.getIdAcdi());
+        assertEquals(ACDI_ID_1, resultado.getIdAcdi());
 
-        verify(acdiOutPort, times(1)).obtenerAcdiPorId(acdiId);
+        verify(acdiOutPort, times(1)).obtenerAcdiPorId(ACDI_ID_1);
     }
 
     @Test
     void deberiaLanzarExcepcionCuandoAcdiNoExisteParaObtener() {
-        Long acdiId = 999L;
+        when(acdiOutPort.obtenerAcdiPorId(ACDI_ID_999)).thenReturn(Optional.empty());
 
-        when(acdiOutPort.obtenerAcdiPorId(acdiId)).thenReturn(Optional.empty());
-
-        assertThrows(AcdiNoEncontradoException.class, () -> acdiService.obtenerAcdiPorId(acdiId));
+        assertThrows(AcdiNoEncontradoException.class, () -> acdiService.obtenerAcdiPorId(ACDI_ID_999));
     }
 
     @Test
     void deberiaEliminarAcdiExitosamente() {
-        Long acdiId = 1L;
+        when(acdiOutPort.obtenerAcdiPorId(ACDI_ID_1)).thenReturn(Optional.of(acdiMock));
+        doNothing().when(acdiOutPort).eliminarAcdi(ACDI_ID_1);
 
-        when(acdiOutPort.obtenerAcdiPorId(acdiId)).thenReturn(Optional.of(acdi));
-        doNothing().when(acdiOutPort).eliminarAcdi(acdiId);
+        acdiService.eliminarAcdi(ACDI_ID_1);
 
-        acdiService.eliminarAcdi(acdiId);
-
-        verify(acdiOutPort, times(1)).eliminarAcdi(acdiId);
+        verify(acdiOutPort, times(1)).eliminarAcdi(ACDI_ID_1);
     }
 
     @Test
     void deberiaLanzarExcepcionCuandoNoSeEncuentraAcdiParaEliminar() {
-        Long acdiId = 999L;
+        when(acdiOutPort.obtenerAcdiPorId(ACDI_ID_999)).thenReturn(Optional.empty());
 
-        when(acdiOutPort.obtenerAcdiPorId(acdiId)).thenReturn(Optional.empty());
-
-        assertThrows(AcdiNoEncontradoException.class, () -> acdiService.eliminarAcdi(acdiId));
+        assertThrows(AcdiNoEncontradoException.class, () -> acdiService.eliminarAcdi(ACDI_ID_999));
     }
 
     @Test
     void deberiaDarDeBajaAcdiExitosamente() {
-        Long acdiId = 1L;
-
         Acdi acdiBajado = Acdi.builder()
-                .habilitado(false)
-                .estado(EstadoAcdi.DESHABILITADA)
+                .habilitado(DESHABILITADO)
+                .estado(ESTADO_DESHABILITADA)
                 .build();
 
-        when(acdiOutPort.obtenerAcdiPorId(acdiId)).thenReturn(Optional.of(acdi));
+        when(acdiOutPort.obtenerAcdiPorId(ACDI_ID_1)).thenReturn(Optional.of(acdiMock));
         when(acdiOutPort.guardarAcdi(any(Acdi.class))).thenReturn(acdiBajado);
 
-        Acdi resultado = acdiService.darDeBajaAcdi(acdiId);
+        Acdi resultado = acdiService.darDeBajaAcdi(ACDI_ID_1);
 
         assertNotNull(resultado);
         assertFalse(resultado.getHabilitado());
-        assertEquals(EstadoAcdi.DESHABILITADA, resultado.getEstado());
+        assertEquals(ESTADO_DESHABILITADA, resultado.getEstado());
 
         verify(acdiOutPort, times(1)).guardarAcdi(any(Acdi.class));
     }
 
     @Test
     void deberiaLanzarExcepcionCuandoNoSeEncuentraAcdiParaBaja() {
-        Long acdiId = 999L;
+        when(acdiOutPort.obtenerAcdiPorId(ACDI_ID_999)).thenReturn(Optional.empty());
 
-        when(acdiOutPort.obtenerAcdiPorId(acdiId)).thenReturn(Optional.empty());
-
-        assertThrows(AcdiNoEncontradoException.class, () -> acdiService.darDeBajaAcdi(acdiId));
+        assertThrows(AcdiNoEncontradoException.class, () -> acdiService.darDeBajaAcdi(ACDI_ID_999));
     }
-
-
 }

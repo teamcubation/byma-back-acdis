@@ -12,9 +12,9 @@ C:\Users\rv1421\OneDrive - BYMA\Documents\capacitacion\proyectos\iniciativa\byma
 C:\Users\rv1421\OneDrive - BYMA\Documents\capacitacion\proyectos\iniciativa\byma-back-acdis\src\main\java\com\byma\back_acdits\infrastructure\adapter\in\web\controller\ApiAcdi.java
 C:\Users\rv1421\OneDrive - BYMA\Documents\capacitacion\proyectos\iniciativa\byma-back-acdis\src\main\java\com\byma\back_acdits\infrastructure\adapter\in\web\controller\impl\AcdiController.java
 C:\Users\rv1421\OneDrive - BYMA\Documents\capacitacion\proyectos\iniciativa\byma-back-acdis\src\main\java\com\byma\back_acdits\infrastructure\adapter\in\web\controller\SwaggerConfig.java
-C:\Users\rv1421\OneDrive - BYMA\Documents\capacitacion\proyectos\iniciativa\byma-back-acdis\src\main\java\com\byma\back_acdits\infrastructure\adapter\in\web\dto\request\ActualizarAcdiSolicitud.java
-C:\Users\rv1421\OneDrive - BYMA\Documents\capacitacion\proyectos\iniciativa\byma-back-acdis\src\main\java\com\byma\back_acdits\infrastructure\adapter\in\web\dto\request\CrearAcdiSolicitud.java
-C:\Users\rv1421\OneDrive - BYMA\Documents\capacitacion\proyectos\iniciativa\byma-back-acdis\src\main\java\com\byma\back_acdits\infrastructure\adapter\in\web\dto\response\AcdiRespuestaDTO.java
+C:\Users\rv1421\OneDrive - BYMA\Documents\capacitacion\proyectos\iniciativa\byma-back-acdis\src\main\java\com\byma\back_acdits\infrastructure\adapter\in\web\dto\request\ActualizarAcdiRequest.java
+C:\Users\rv1421\OneDrive - BYMA\Documents\capacitacion\proyectos\iniciativa\byma-back-acdis\src\main\java\com\byma\back_acdits\infrastructure\adapter\in\web\dto\request\CrearAcdiRequest.java
+C:\Users\rv1421\OneDrive - BYMA\Documents\capacitacion\proyectos\iniciativa\byma-back-acdis\src\main\java\com\byma\back_acdits\infrastructure\adapter\in\web\dto\response\AcdiResponseDTO.java
 C:\Users\rv1421\OneDrive - BYMA\Documents\capacitacion\proyectos\iniciativa\byma-back-acdis\src\main\java\com\byma\back_acdits\infrastructure\adapter\in\web\mapper\AcdiControllerMapper.java
 C:\Users\rv1421\OneDrive - BYMA\Documents\capacitacion\proyectos\iniciativa\byma-back-acdis\src\main\java\com\byma\back_acdits\infrastructure\adapter\out\persistance\AcdiOutAdapter.java
 C:\Users\rv1421\OneDrive - BYMA\Documents\capacitacion\proyectos\iniciativa\byma-back-acdis\src\main\java\com\byma\back_acdits\infrastructure\adapter\out\persistance\entity\AcdiEntity.java

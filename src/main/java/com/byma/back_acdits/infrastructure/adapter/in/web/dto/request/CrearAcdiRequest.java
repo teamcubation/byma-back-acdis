@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class CrearAcdiSolicitud {
+public class CrearAcdiRequest {
 
     @NotBlank(message = "El ID de la organizacion es obligatorio")
     private String idOrganizacion;
